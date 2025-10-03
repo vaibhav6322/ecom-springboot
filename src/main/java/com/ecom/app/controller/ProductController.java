@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
@@ -31,4 +33,21 @@ public class ProductController {
                 .map(ResponseEntity::ok)
                 .orElseGet(()-> ResponseEntity.notFound().build());
     }
+    @GetMapping
+    public ResponseEntity<List<ProductResponse>> getProducts()
+    {
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ProductResponse> deleteproductByID(@PathVariable Long id)
+    {
+        return new ResponseEntity<ProductResponse>(productService.deleteproductbyId(id),HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductResponse>> searchProducts(@RequestParam String keyword)
+    {
+        return ResponseEntity.ok(productService.searchProducts(keyword));
+    }
+
 }

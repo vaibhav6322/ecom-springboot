@@ -9,7 +9,9 @@ import org.apache.catalina.authenticator.SavedRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,5 +56,26 @@ public class ProductService {
                     Product savedProduct = productRepository.save(existingProduct);
                     return mapToProductResponse(savedProduct);
                 });
+    }
+
+    public List<ProductResponse> getAllProducts() {
+        return productRepository.findByActiveTrue().stream()
+                .map(this::mapToProductResponse).collect(Collectors.toList());
+    }
+
+    public ProductResponse deleteproductbyId(Long id) {
+        return productRepository.findById(id)
+                .map(product -> {
+                    productRepository.delete(product);
+                    return mapToProductResponse(product);
+                })
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+    }
+
+    public List<ProductResponse> searchProducts(String keyword) {
+        return productRepository.searchProducts(keyword).stream().map(
+                this::mapToProductResponse).collect(
+                        Collectors.toList()
+        );
     }
 }
